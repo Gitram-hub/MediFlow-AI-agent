@@ -1,12 +1,20 @@
 import { useContext } from "react";
 import { datacontext } from "../context/dataContext";
+import EmergencySignal from "./EmergencySignal";
 import va from "../assets/assistant.jpg";
 
 const Assistant = () => {
-  const { connect, disconnect, messages, status } = useContext(datacontext);
+  const { connect, disconnect, messages, status, isEmergency, emergencyKeywords, setIsEmergency } = useContext(datacontext);
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white">
+      {/* Emergency Signal */}
+      {isEmergency && (
+        <EmergencySignal 
+          isEmergency={isEmergency} 
+          keywords={emergencyKeywords}
+        />
+      )}
 
       {/* LEFT PANEL */}
       <div className="w-1/3 p-6 flex flex-col justify-between border-r border-white/10">

@@ -10,7 +10,7 @@ const PatientDashboard = () => {
   const navigate = useNavigate();
 
   const userId = localStorage.getItem("user_id");
-
+  
   useEffect(() => {
     if (!userId) {
       navigate("/login");
@@ -31,6 +31,7 @@ const PatientDashboard = () => {
         setHistory(historyData);
 
         if (patientData?.id) {
+          console.log(patientData)
           localStorage.setItem("patient_id", patientData.id);
         }
       } catch (err) {
