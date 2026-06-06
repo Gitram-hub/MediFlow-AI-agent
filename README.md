@@ -79,5 +79,4 @@ Lightweight FastAPI backend providing patient management, appointments, and AI-a
 - AI features depend on models and external services configured in `backend/config/settings.py`.
 - If you want, I can add a `.env.example`, CI, or Dockerfile next.
 
-## Contact
-If you need the README expanded (examples, full env vars, Docker), tell me which sections to add.
+
