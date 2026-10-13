@@ -61,6 +61,8 @@
 .mobile-brand { display: none; }
 .form-heading p { margin: 0 0 5px; color: #94a3b8; font-size: 13px; }
 .form-heading h2 { margin: 0; font-size: 32px; letter-spacing: -.05em; }
+.role-active-badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 8px; border: 1px solid rgba(52,211,153,.3); border-radius: 999px; color: #6ee7b7; background: rgba(16,185,129,.12); font-size: 9px; font-weight: 800; letter-spacing: .12em; vertical-align: middle; }
+.role-active-badge::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; }
 .form-heading span { display: block; margin-top: 8px; color: #64748b; font-size: 13px; }
 .role-switcher { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 28px 0 25px; padding: 4px; border: 1px solid rgba(255,255,255,.08); border-radius: 12px; background: rgba(255,255,255,.04); }
 .role-switcher a { padding: 8px 3px; border-radius: 8px; color: #94a3b8; font-size: 11px; text-align: center; text-decoration: none; transition: .25s ease; }

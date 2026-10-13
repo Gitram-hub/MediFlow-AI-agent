@@ -71,6 +71,10 @@ export default function Home() {
           <p className="mt-3 text-slate-300">
             AI-powered healthcare agents for faster diagnosis & smart care
           </p>
+          <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1.5 text-xs font-semibold text-cyan-200">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399]" />
+            Signing in as <span className="text-white">Patient</span>
+          </div>
 
           <form onSubmit={handleLogin} className="mt-8 space-y-5">
 

@@ -126,14 +126,14 @@ export default function RoleLogin() {
             <Link to="/" className="role-brand"><span className="brand-mark">M</span><span>MediFlow <b>AI</b></span></Link>
           </div>
           <div className="form-heading">
-            <p>Sign in as</p>
-            <h2>{config.label}</h2>
+            <p>Active login role</p>
+            <h2 className="flex items-center gap-3">{config.label}<span className="role-active-badge">ACTIVE</span></h2>
             <span>Enter your credentials to continue</span>
           </div>
 
           <div className="role-switcher" aria-label="Choose account type">
             {Object.entries(ROLE_CONFIG).map(([key, item]) => (
-              <Link className={key === role ? "active" : ""} to={`/login/${key}`} key={key}>
+              <Link className={key === role ? "active" : ""} to={key === "patient" ? "/" : `/login/${key}`} key={key}>
                 {item.label === "Administrator" ? "Admin" : item.label}
               </Link>
             ))}
