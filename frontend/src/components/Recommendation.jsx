@@ -31,7 +31,7 @@ export default function Recommendation() {
   const payload = hasNavigationPayload ? location.state : getStoredPayload();
   const showingDemo = !hasUsefulResults(payload);
   const displayPayload = showingDemo ? DEMO_RECOMMENDATION : payload;
-  const { recommended_specialists = [], doctors = [] } = displayPayload;
+  const { recommended_specialists = [], specialist_reasons = {}, doctors = [] } = displayPayload;
 
   // Deduplicate doctors by doctor_id
   const uniqueDoctors = useMemo(() => {
@@ -96,7 +96,10 @@ export default function Recommendation() {
           </p>
           <ul className="specialist-list">
             {recommended_specialists.map((specialist) => (
-              <li key={specialist}>{specialist}</li>
+              <li key={specialist}>
+                <strong>{specialist}</strong>
+                {specialist_reasons[specialist] && <span className="block text-sm opacity-80">{specialist_reasons[specialist]}</span>}
+              </li>
             ))}
           </ul>
         </>
@@ -114,6 +117,7 @@ export default function Recommendation() {
                 <p><strong>Hospital:</strong> {doctor.hospital}</p>
                 <p><strong>Experience:</strong> {doctor.experience || 0} years</p>
                 {doctor.qualifications && <p><strong>Qualifications:</strong> {doctor.qualifications}</p>}
+                <p className="text-xs opacity-70">Verified database provider · availability shown from clinic records</p>
                 <p><strong>Rating:</strong> {doctor.rating} / 5</p>
                 <p><strong>Fee:</strong> Rs. {doctor.fees}</p>
                 <p><strong>Next Slot:</strong> {formatDateTime(doctor.next_available_date, doctor.start_time)}</p>

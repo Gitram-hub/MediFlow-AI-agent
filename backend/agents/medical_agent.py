@@ -23,6 +23,7 @@ class AgentState(TypedDict, total=False):
     normalized_symptoms: list[str]
     specialists: list[str]
     recommended_specialists: list[str]
+    specialist_reasons: dict[str, str]
     doctors: list[dict]
 
 
@@ -38,6 +39,17 @@ def _get_llm(settings: Settings) -> ChatOpenAI | None:
 
 def _csv(text: str) -> list[str]:
     return [item.strip() for item in text.split(",") if item.strip()]
+
+
+def _specialist_reasons(symptoms: list[str], specialists: list[str]) -> dict[str, str]:
+    symptom_text = ", ".join(symptoms) or "the reported symptoms"
+    return {
+        specialist: (
+            f"{specialist} may be relevant because the reported symptoms include "
+            f"{symptom_text}. This is a routing suggestion, not a diagnosis."
+        )
+        for specialist in specialists
+    }
 
 
 def build_graph(settings: Settings | None = None):
@@ -144,5 +156,12 @@ def run_medical_agent(phrases: list[str], settings: Settings | None = None) -> A
         "normalized_symptoms": state.get("normalized_symptoms", []),
         "specialists": state.get("specialists", []),
         "recommended_specialists": state.get("recommended_specialists", []),
+        "specialist_reasons": state.get(
+            "specialist_reasons",
+            _specialist_reasons(
+                state.get("normalized_symptoms", []),
+                state.get("recommended_specialists", []),
+            ),
+        ),
         "doctors": state.get("doctors", []),
     }

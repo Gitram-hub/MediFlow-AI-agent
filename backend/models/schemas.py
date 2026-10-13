@@ -74,6 +74,7 @@ class AgentRunResponse(BaseModel):
     normalized_symptoms: list[str]
     specialists: list[str]
     recommended_specialists: list[str]
+    specialist_reasons: dict[str, str] = Field(default_factory=dict)
     doctors: list[Doctor]
 
 
@@ -87,6 +88,30 @@ class AppointmentRequest(BaseModel):
 class AppointmentResponse(BaseModel):
     message: str
     appointment_id: int
+
+
+class AppointmentRecord(BaseModel):
+    appointment_id: int
+    doctor_id: int
+    doctor_name: str
+    specialization: str
+    hospital: Optional[str] = None
+    slot_id: int
+    appointment_date: str
+    start_time: str
+    end_time: str
+    reason: str
+    status: str
+
+
+class AppointmentListResponse(BaseModel):
+    appointments: list[AppointmentRecord]
+
+
+class AppointmentRescheduleRequest(BaseModel):
+    patient_id: int
+    appointment_id: int
+    new_slot_id: int
 
 
 class EmergencyCheckRequest(BaseModel):

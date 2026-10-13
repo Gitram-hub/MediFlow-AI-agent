@@ -36,6 +36,10 @@ export const DEMO_RECOMMENDATION = {
   normalized_symptoms: ["Chest discomfort", "Fatigue"],
   specialists: ["Cardiology", "General Medicine"],
   recommended_specialists: ["Cardiology", "General Medicine"],
+  specialist_reasons: {
+    Cardiology: "Chest discomfort can involve the heart or circulation and should be assessed by a qualified clinician. This is not a diagnosis.",
+    "General Medicine": "A general physician can assess fatigue and coordinate further care if needed. This is not a diagnosis.",
+  },
   doctors: [
     {
       doctor_id: 9001,

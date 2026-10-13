@@ -9,6 +9,8 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 const PatientDashboard = () => {
   const [patient, setPatient] = useState(null);
   const [history, setHistory] = useState(null);
+  const [appointments, setAppointments] = useState([]);
+  const [appointmentMessage, setAppointmentMessage] = useState("");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -38,6 +40,11 @@ const PatientDashboard = () => {
 
         setPatient(patientData);
         setHistory(historyData);
+        const appointmentsRes = await fetch(`${BACKEND_URL}/appointments/${patientData.id}`);
+        if (appointmentsRes.ok) {
+          const appointmentsData = await appointmentsRes.json();
+          setAppointments(appointmentsData.appointments || []);
+        }
 
         if (patientData?.id) {
           localStorage.setItem("patient_id", patientData.id);
@@ -49,6 +56,20 @@ const PatientDashboard = () => {
 
     loadDashboard();
   }, [navigate, userId]);
+
+  async function cancelAppointment(appointmentId) {
+    const patientId = Number(localStorage.getItem("patient_id"));
+    setAppointmentMessage("");
+    try {
+      const response = await fetch(`${BACKEND_URL}/appointments/cancel?patient_id=${patientId}&appointment_id=${appointmentId}`, { method: "POST" });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data?.detail || "Unable to cancel appointment");
+      setAppointments((current) => current.map((appointment) => appointment.appointment_id === appointmentId ? { ...appointment, status: "cancelled" } : appointment));
+      setAppointmentMessage("Appointment cancelled successfully.");
+    } catch (err) {
+      setAppointmentMessage(err.message);
+    }
+  }
 
   if (error)
     return (
@@ -123,6 +144,27 @@ const PatientDashboard = () => {
             </div>
           ))}
         </div>
+
+        <h3 className="mt-8 mb-4 text-xl font-semibold text-cyan-400">📅 Appointments</h3>
+        {appointmentMessage && <p className="mb-3 text-sm text-cyan-200">{appointmentMessage}</p>}
+        {appointments.length > 0 ? (
+          <div className="space-y-3">
+            {appointments.map((appointment) => (
+              <div key={appointment.appointment_id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 p-4">
+                <div>
+                  <p className="font-semibold">{appointment.doctor_name} · {appointment.specialization}</p>
+                  <p className="text-sm text-gray-400">{appointment.hospital || "Hospital"} · {appointment.appointment_date} {appointment.start_time}</p>
+                  <p className="text-xs uppercase text-cyan-300">{appointment.status}</p>
+                </div>
+                {appointment.status === "booked" && (
+                  <button type="button" onClick={() => cancelAppointment(appointment.appointment_id)} className="rounded-lg border border-red-400/40 px-3 py-2 text-sm text-red-200 hover:bg-red-500/20">Cancel</button>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-gray-400">No appointments yet.</p>
+        )}
 
         {/* Button */}
         <button
