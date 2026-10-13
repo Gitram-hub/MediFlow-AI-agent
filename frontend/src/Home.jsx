@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { DEMO_USER } from "./demoData"
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000"
@@ -111,6 +111,15 @@ export default function Home() {
             </button>
 
           </form>
+
+          <div className="mt-7 border-t border-white/10 pt-5">
+            <p className="mb-3 text-center text-xs uppercase tracking-wider text-slate-400">Choose another portal</p>
+            <div className="grid grid-cols-3 gap-2 text-center text-xs">
+              <Link to="/login/doctor" className="rounded-lg border border-white/10 px-2 py-2 text-slate-300 transition hover:border-blue-300 hover:text-white">Doctor</Link>
+              <Link to="/login/hospital" className="rounded-lg border border-white/10 px-2 py-2 text-slate-300 transition hover:border-amber-300 hover:text-white">Hospital</Link>
+              <Link to="/login/admin" className="rounded-lg border border-white/10 px-2 py-2 text-slate-300 transition hover:border-fuchsia-300 hover:text-white">Admin</Link>
+            </div>
+          </div>
 
           {errorMessage && (
             <p className="mt-4 text-red-400 text-sm">
