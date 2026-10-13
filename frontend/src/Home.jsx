@@ -1,7 +1,9 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { DEMO_USER } from "./demoData"
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000"
+const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true"
 
 export default function Home() {
   const [email, setEmail] = useState("")
@@ -13,8 +15,10 @@ export default function Home() {
   const handleLogin = async (e) => {
     e.preventDefault()
 
-    if (!BACKEND_URL) {
-      setErrorMessage("Backend URL not configured")
+    if (DEMO_MODE && email === DEMO_USER.email && password === DEMO_USER.password) {
+      localStorage.setItem("user_id", String(DEMO_USER.userId))
+      localStorage.setItem("patient_id", String(DEMO_USER.patientId))
+      navigate("/dashboard")
       return
     }
 
@@ -34,7 +38,11 @@ export default function Home() {
       localStorage.setItem("user_id", data.user_id)
       navigate("/dashboard")
     } catch (err) {
-      setErrorMessage(err.message || "Login failed")
+      setErrorMessage(
+        DEMO_MODE
+          ? `Unable to connect to the backend. Use ${DEMO_USER.email} / ${DEMO_USER.password} for demo mode.`
+          : (err.message || "Login failed")
+      )
     } finally {
       setIsSubmitting(false)
     }

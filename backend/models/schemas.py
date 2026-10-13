@@ -55,6 +55,9 @@ class Doctor(BaseModel):
     specialization: str
     rating: float = 0
     fees: int = 0
+    experience: int = 0
+    qualifications: Optional[str] = None
+    contact_number: Optional[str] = None
     hospital: Optional[str] = None
     next_available_date: str = "Not available"
     start_time: str = "N/A"

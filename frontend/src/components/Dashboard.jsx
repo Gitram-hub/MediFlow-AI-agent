@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { DEMO_HISTORY, DEMO_PATIENT } from "../demoData";
+
+const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
@@ -19,6 +22,12 @@ const PatientDashboard = () => {
 
     async function loadDashboard() {
       try {
+        if (DEMO_MODE) {
+          setPatient(DEMO_PATIENT);
+          setHistory(DEMO_HISTORY);
+          return;
+        }
+
         const patientRes = await fetch(`${BACKEND_URL}/patient-details/${userId}`);
         const patientData = await patientRes.json();
         if (!patientRes.ok) throw new Error(patientData?.detail);
@@ -31,7 +40,6 @@ const PatientDashboard = () => {
         setHistory(historyData);
 
         if (patientData?.id) {
-          console.log(patientData)
           localStorage.setItem("patient_id", patientData.id);
         }
       } catch (err) {

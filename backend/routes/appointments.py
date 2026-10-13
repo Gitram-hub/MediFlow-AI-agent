@@ -34,6 +34,15 @@ def create_appointment(request: AppointmentRequest) -> AppointmentResponse:
         raise
     except DatabaseError as exc:
         logger.exception("Appointment creation failed")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)) from exc
+        detail = str(exc)
+        if "already booked" in detail.lower():
+            response_status = status.HTTP_409_CONFLICT
+        elif "unavailable" in detail.lower():
+            response_status = status.HTTP_409_CONFLICT
+        elif "patient does not exist" in detail.lower():
+            response_status = status.HTTP_404_NOT_FOUND
+        else:
+            response_status = status.HTTP_500_INTERNAL_SERVER_ERROR
+        raise HTTPException(status_code=response_status, detail=detail) from exc
 
     return AppointmentResponse(message="Appointment created", appointment_id=int(appointment_id))

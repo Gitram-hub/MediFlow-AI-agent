@@ -1,12 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./EmergencySignal.css";
 
 export default function EmergencySignal({ isEmergency, keywords = [] }) {
-  const [visible, setVisible] = useState(isEmergency);
-
-  useEffect(() => {
-    setVisible(isEmergency);
-  }, [isEmergency]);
+  const [dismissed, setDismissed] = useState(false);
+  const visible = isEmergency && !dismissed;
 
   if (!visible) return null;
 
@@ -52,7 +49,7 @@ export default function EmergencySignal({ isEmergency, keywords = [] }) {
 
           <button
             className="emergency-acknowledge"
-            onClick={() => setVisible(false)}
+            onClick={() => setDismissed(true)}
           >
             Acknowledge
           </button>

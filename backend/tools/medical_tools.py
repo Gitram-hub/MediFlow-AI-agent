@@ -97,11 +97,14 @@ def fetch_doctor_details(specialists: list[str]) -> list[dict]:
                 "specialization": str(row[2]),
                 "rating": float(row[3] or 0),
                 "fees": int(row[4] or 0),
-                "hospital": str(row[5]) if row[5] is not None else None,
-                "next_available_date": str(row[6]) if row[6] else "Not available",
-                "start_time": str(row[7]) if row[7] else "N/A",
-                "end_time": str(row[8]) if row[8] else "N/A",
-                "slot_id": int(row[9]) if row[9] is not None else None,
+                "experience": int(row[5] or 0),
+                "qualifications": str(row[6]) if row[6] is not None else None,
+                "contact_number": str(row[7]) if row[7] is not None else None,
+                "hospital": str(row[8]) if row[8] is not None else None,
+                "next_available_date": str(row[9]) if row[9] else "Not available",
+                "start_time": str(row[10]) if row[10] else "N/A",
+                "end_time": str(row[11]) if row[11] else "N/A",
+                "slot_id": int(row[12]) if row[12] is not None else None,
             }
         )
     return doctors

@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true";
 
 export default function Payment() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState("");
-  const [hasValidData, setHasValidData] = useState(false);
 
   // Safely extract appointment data from location state
   const getAppointmentData = () => {
@@ -30,21 +30,33 @@ export default function Payment() {
   };
 
   const [appointmentData] = useState(() => getAppointmentData());
-
-  // Check if we have valid data
-  useEffect(() => {
-    if (appointmentData && appointmentData.doctor_id && appointmentData.slot_id) {
-      setHasValidData(true);
-    } else {
-      setHasValidData(false);
-    }
-  }, [appointmentData]);
+  const hasValidData = Boolean(appointmentData?.doctor_id && appointmentData?.slot_id);
 
   const handlePayment = async () => {
     setIsProcessing(true);
+    setError("");
 
-    // Simulate payment processing delay - no actual payment
-    setTimeout(() => {
+    try {
+      const patientId = Number(localStorage.getItem("patient_id"));
+      const isDemoBooking = DEMO_MODE || !Number.isInteger(patientId);
+
+      if (!isDemoBooking) {
+        const response = await fetch(`${BACKEND_URL}/appointments`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            patient_id: patientId,
+            doctor_id: Number(appointmentData.doctor_id),
+            slot_id: Number(appointmentData.slot_id),
+            reason: `Consultation with ${appointmentData.specialization}`,
+          }),
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result?.detail || "Unable to create appointment");
+        }
+      }
+
       // Generate room details
       const roomNumber = "Room " + Math.floor(Math.random() * 100 + 1);
       const floor = "Floor " + Math.floor(Math.random() * 5 + 1);
@@ -71,16 +83,33 @@ export default function Payment() {
         paymentMethod: "Credit/Debit Card",
       };
 
-      setIsProcessing(false);
       navigate(
         `/success?data=${encodeURIComponent(JSON.stringify(successPayload))}`
       );
-    }, 1500);
+    } catch (err) {
+      setError(err.message || "Unable to complete booking");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleCancel = () => {
     navigate(-1);
   };
+
+  if (!hasValidData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <div className="text-center text-white">
+          <h2 className="text-2xl font-bold mb-3">Appointment details unavailable</h2>
+          <p className="text-gray-300 mb-6">Please choose a doctor before starting payment.</p>
+          <button type="button" onClick={handleCancel} className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg">
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Valid appointment data - show payment form
   return (
@@ -135,6 +164,7 @@ export default function Payment() {
           {/* Quick Payment */}
           <div className="space-y-6">
             <div className="text-center">
+              {error && <p className="mb-4 text-sm text-red-300">{error}</p>}
               <p className="text-gray-400 text-sm mb-6">
                 Click below to complete your appointment booking instantly
               </p>

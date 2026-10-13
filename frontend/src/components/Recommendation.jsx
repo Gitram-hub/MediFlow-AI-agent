@@ -1,39 +1,37 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState, useMemo } from "react";
+import { useMemo } from "react";
 
 import "./Recommendation.css";
-
-
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+import { DEMO_RECOMMENDATION } from "../demoData";
 
 
 export default function Recommendation() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [payload, setPayload] = useState(location.state || null);
 
   const hasUsefulResults = (value) => {
     if (!value) return false;
     return (value.recommended_specialists?.length || 0) > 0 || (value.doctors?.length || 0) > 0;
   };
 
-  useEffect(() => {
-    if (hasUsefulResults(payload)) return;
-
+  const getStoredPayload = () => {
     const stored = localStorage.getItem("last_recommendation");
-    if (!stored) return;
+    if (!stored) return null;
 
     try {
       const parsed = JSON.parse(stored);
-      if (hasUsefulResults(parsed)) {
-        setPayload(parsed);
-      }
+      return hasUsefulResults(parsed) ? parsed : null;
     } catch {
       localStorage.removeItem("last_recommendation");
+      return null;
     }
-  }, [payload]);
+  };
 
-  const { recommended_specialists = [], doctors = [] } = payload || {};
+  const hasNavigationPayload = location.state !== null && location.state !== undefined;
+  const payload = hasNavigationPayload ? location.state : getStoredPayload();
+  const showingDemo = !hasUsefulResults(payload);
+  const displayPayload = showingDemo ? DEMO_RECOMMENDATION : payload;
+  const { recommended_specialists = [], doctors = [] } = displayPayload;
 
   // Deduplicate doctors by doctor_id
   const uniqueDoctors = useMemo(() => {
@@ -89,6 +87,7 @@ export default function Recommendation() {
   return (
     <div className="recommendation-container">
       <h2 className="recommendation-heading">Consult Recommendation</h2>
+      {showingDemo && <p className="warning-text">Demo preview: sample recommendations and doctors.</p>}
 
       {recommended_specialists.length > 0 ? (
         <>
@@ -113,6 +112,8 @@ export default function Recommendation() {
                 <p className="doctor-name">{doctor.name}</p>
                 <p><strong>Specialization:</strong> {doctor.specialization}</p>
                 <p><strong>Hospital:</strong> {doctor.hospital}</p>
+                <p><strong>Experience:</strong> {doctor.experience || 0} years</p>
+                {doctor.qualifications && <p><strong>Qualifications:</strong> {doctor.qualifications}</p>}
                 <p><strong>Rating:</strong> {doctor.rating} / 5</p>
                 <p><strong>Fee:</strong> Rs. {doctor.fees}</p>
                 <p><strong>Next Slot:</strong> {formatDateTime(doctor.next_available_date, doctor.start_time)}</p>

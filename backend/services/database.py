@@ -75,6 +75,7 @@ def run_all_sql_files(settings: Settings):
     try:
         base_path = Path(__file__).resolve().parents[2] / "database/sql"
         schema_file = base_path / "schema.sql"
+        migrations_path = base_path / "migrations"
         functions_path = base_path / "functions"
 
         conn = get_db_connection(settings)
@@ -95,6 +96,21 @@ def run_all_sql_files(settings: Settings):
                         logger.warning(f"Schema execution: {e}")
 
             conn.commit()
+
+            if migrations_path.exists():
+                logger.info("Running database migrations...")
+                for file in sorted(migrations_path.glob("*.sql")):
+                    logger.info("Running migration %s", file.name)
+                    migration_content = file.read_text(encoding="utf-8")
+                    for statement in _parse_sql_with_delimiters(migration_content):
+                        try:
+                            cursor.execute(statement)
+                        except mysql.connector.Error as e:
+                            message = str(e).lower()
+                            if "already exists" not in message and "duplicate key name" not in message:
+                                logger.error("Migration %s failed: %s", file.name, e)
+                                raise
+                conn.commit()
 
             logger.info("Running stored procedures...")
             for file in sorted(functions_path.glob("*.sql")):

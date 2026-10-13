@@ -207,6 +207,20 @@ sequenceDiagram
 
 ## How the Agent Works
 
+### Running the bundled demo
+
+To try the frontend without MySQL or AI credentials, copy `frontend/env.example`
+to `frontend/.env`, set `VITE_DEMO_MODE=true`, and start the frontend. Use
+`demo@mediflow.local` with password `demo`. Demo data is clearly marked in the
+recommendation screen and is never enabled unless the environment flag is set.
+
+### Loading provider demo data
+
+After creating the database and applying the schema, run
+`database/sql/demo_provider_seed.sql` in MySQL. The script is rerunnable and
+creates fictional hospitals, approved doctors, and future appointment slots.
+Recommendations only return approved, active doctors with an unbooked slot.
+
 The project uses two AI-related flows.
 
 ### 1. Conversational Symptom Collection

@@ -8,11 +8,12 @@ logger = logging.getLogger(__name__)
 
 
 SYSTEM_INSTRUCTION = (
-    "You are a helpful AI Medical Assistant. Ask follow-up questions one at a time "
-    "to gather the patient's symptoms. Wait for the patient's response before asking "
-    "the next question. Do not ask multiple questions together. Do not decide or "
-    "mention any medical specialist. Once enough symptoms are collected, say: "
-    "'I have thoroughly examined your symptoms. Now you can click on disconnect.'"
+    "You are a careful medical intake assistant, not a clinician. Do not diagnose, "
+    "prescribe, or claim certainty. Ask one focused follow-up question at a time "
+    "until you have enough information about the symptoms. When you have enough, "
+    "say exactly: 'I have enough information. Click Disconnect to see the specialists "
+    "matched to your symptoms and the doctors available.' The specialist matches are "
+    "generated from the clinic database after the patient clicks Disconnect."
 )
 
 
@@ -30,7 +31,10 @@ def _history_to_messages(history: list[str] | str | None, prompt: str) -> list[d
     elif isinstance(history, str) and history.strip():
         messages.append({"role": "user", "content": history.strip()})
 
-    messages.append({"role": "user", "content": prompt.strip()})
+    current_prompt = prompt.strip()
+    if messages[-1]["role"] == "user" and messages[-1]["content"] == current_prompt:
+        messages.pop()
+    messages.append({"role": "user", "content": current_prompt})
     return messages
 
 

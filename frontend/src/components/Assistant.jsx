@@ -4,7 +4,7 @@ import EmergencySignal from "./EmergencySignal";
 import va from "../assets/assistant.jpg";
 
 const Assistant = () => {
-  const { connect, disconnect, messages, status, isEmergency, emergencyKeywords, setIsEmergency } = useContext(datacontext);
+  const { connect, disconnect, messages, status, isEmergency, emergencyKeywords } = useContext(datacontext);
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white">
@@ -35,7 +35,7 @@ const Assistant = () => {
               />
 
               {/* Pulse animation when connected */}
-              {status === "connected" && (
+              {status === "Listening" && (
                 <span className="absolute inset-0 rounded-full border-4 border-cyan-400 animate-ping opacity-40"></span>
               )}
             </div>
@@ -75,7 +75,7 @@ const Assistant = () => {
               <div
                 key={index}
                 className={`max-w-xs p-3 rounded-xl animate-fadeIn ${
-                  msg.sender === "User"
+                  msg.sender === "Patient"
                     ? "ml-auto bg-cyan-500 text-black"
                     : "bg-white/10 border border-white/20"
                 }`}
